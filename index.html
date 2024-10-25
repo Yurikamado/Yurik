@@ -3,364 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ai là Triệu Phú</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Caro Game</title>
     <style>
         body {
             font-family: sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #020024;
-            color: white;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
         }
 
-        #question-container {
-            margin-top: 20px;
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(15, 1fr); /* Adjust for board size */
+            border-collapse: collapse;
+        }
+
+        .cell {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #333;
             text-align: center;
+            font-size: 20px;
+            cursor: pointer;
+            line-height: 30px;
         }
 
-        .answer-button {
-            display: block;
-            width: 300px;
-            margin: 10px auto;
-            padding: 10px;
-            background-color: #3c3465;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.1em;
+        .cell.X {
+            color: blue;
         }
-        .answer-button:hover{
-            background-color: #544c8a;
+
+        .cell.O {
+            color: red;
         }
+
         #message {
             margin-top: 20px;
             font-size: 1.2em;
         }
-
-        .money-level {
-            list-style-type: none;
-            padding: 0;
-            margin-right: 20px; /* Adjust as needed */
-        }
-
-        .money-level li {
-            padding: 5px 0;
-
-        }
-
-        .current-level {
-            background-color: #f2c12e; /* Highlight current level */
-            color:black;
-        }
-        .help-buttons button{
-            width: 100px;
-            height: 40px;
-            margin: 10px;
-            border-radius: 10px;
-            border: none;
-            background-color: #8ecae6;
-            color: black;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .help-buttons button:hover{
-            background-color: #219ebc;
-        }
-        .help-buttons{
-            margin-top: 20px;
-        }
-        .fifty-fifty-used{
-            opacity: 0.5;
-            pointer-events: none;
-        }
-        .ask-the-audience-used{
-            opacity: 0.5;
-            pointer-events: none;
-        }
-        .call-a-friend-used{
-            opacity: 0.5;
-            pointer-events: none;
-        }
         @media (max-width: 400px) {
-            .answer-button {
-                width: 90%;
-            }
-            .money-level{
-                margin-right: 0;
-            }
-            .help-buttons button{
-                width: 80px;
-                height: 30px;
+            .cell {
+                width: 20px;
+                height: 20px;
                 font-size: 14px;
+                line-height: 20px;
             }
         }
-
-
     </style>
 </head>
 <body>
 
-    <div id="game">
-        <h1>Ai là Triệu Phú</h1>
-
-        <div id="money-tree">
-            <ul class="money-level">
-                <li>15 - 200.000.000</li>
-                <li>14 - 150.000.000</li>
-                <li>13 - 100.000.000</li>
-                <li>12 - 85.000.000</li>
-                <li>11 - 60.000.000</li>
-                <li>10 - 40.000.000</li>
-                <li>9 - 30.000.000</li>
-                <li>8 - 20.000.000</li>
-                <li>7 - 14.000.000</li>
-                <li>6 - 10.000.000</li>
-                <li>5 - 6.000.000</li>
-                <li>4 - 3.000.000</li>
-                <li>3 - 2.000.000</li>
-                <li>2 - 1.000.000</li>
-                <li>1 - 500.000</li>
-
-            </ul>
-        </div>
-
-        <div id="question-container">
-            <div id="question"></div>
-            <button class="answer-button" id="answerA"></button>
-            <button class="answer-button" id="answerB"></button>
-            <button class="answer-button" id="answerC"></button>
-            <button class="answer-button" id="answerD"></button>
-        </div>
-
-        <div class="help-buttons">
-            <button id="fifty-fifty"><i class="fas fa-times"></i> 50/50</button>
-            <button id="ask-the-audience"><i class="fas fa-users"></i> Hỏi khán giả</button>
-            <button id="call-a-friend"><i class="fas fa-phone"></i> Gọi điện thoại</button>
-        </div>
-
-        <div id="message"></div>
-    </div>
-
+    <h1>Caro Game</h1>
+    <div id="game-board"></div>
+    <div id="message"></div>
 
     <script>
-        const questions = [
-            // ... (15 questions with answers and correct answer) ...
-            // Example question format:
-            {
-                question: "Câu hỏi 1: Kỹ năng nào quan trọng nhất để giao tiếp hiệu quả?",
-                answers: {
-                    A: "Nói liên tục",
-                    B: "Viết thư",
-                    C: "Lắng nghe",
-                    D: "Diễn thuyết"
-                },
-                correct: "C"
-            },
-            {
-                question: "Câu hỏi 2: Khi làm việc nhóm, bạn cần có kỹ năng gì để chia sẻ ý kiến?",
-                answers: {
-                    A: "Tự tin",
-                    B: "Ngại ngùng",
-                    C: "Bảo thủ",
-                    D: "Thờ ơ"
-                },
-                correct: "A"
-            },
-            {
-        question: "Câu hỏi 2: Ngọn núi nào cao nhất thế giới?",
-        answers: {
-            A: "K2",
-            B: "Kangchenjunga",
-            C: "Everest",
-            D: "Lhotse"
-        },
-        correct: "C"
-    },
-    {
-        question: "Câu hỏi 2: Ngọn núi nào cao nhất thế giới?",
-        answers: {
-            A: "K2",
-            B: "Kangchenjunga",
-            C: "Everest",
-            D: "Lhotse"
-        },
-        correct: "C"
-    },
-    {
-        question: "Câu hỏi 2: Ngọn núi nào cao nhất thế giới?",
-        answers: {
-            A: "K2",
-            B: "Kangchenjunga",
-            C: "Everest",
-            D: "Lhotse"
-        },
-        correct: "C"
-    },
-    {
-        question: "Câu hỏi 2: Ngọn núi nào cao nhất thế giới?",
-        answers: {
-            A: "K2",
-            B: "Kangchenjunga",
-            C: "Everest",
-            D: "Lhotse"
-        },
-        correct: "C"
-    },
-    {
-        question: "Câu hỏi 2: Ngọn núi nào cao nhất thế giới?",
-        answers: {
-            A: "K2",
-            B: "Kangchenjunga",
-            C: "Everest",
-            D: "Lhotse"
-        },
-        correct: "C"
-    },
-    {
-        question: "Câu hỏi 2: Ngọn núi nào cao nhất thế giới?",
-        answers: {
-            A: "K2",
-            B: "Kangchenjunga",
-            C: "Everest",
-            D: "Lhotse"
-        },
-        correct: "C"
-    },
-    {
-        question: "Câu hỏi 2: Ngọn núi nào cao nhất thế giới?",
-        answers: {
-            A: "K2",
-            B: "Kangchenjunga",
-            C: "Everest",
-            D: "Lhotse"
-        },
-        correct: "C"
-    },
-    {
-        question: "Câu hỏi 2: Ngọn núi nào cao nhất thế giới?",
-        answers: {
-            A: "K2",
-            B: "Kangchenjunga",
-            C: "Everest",
-            D: "Lhotse"
-        },
-        correct: "C"
-    },
-    {
-        question: "Câu hỏi 2: Ngọn núi nào cao nhất thế giới?",
-        answers: {
-            A: "K2",
-            B: "Kangchenjunga",
-            C: "Everest",
-            D: "Lhotse"
-        },
-        correct: "C"
-    },
-            // ... 13 more questions
-        ];
+        const boardSize = 15; // Adjust for board size
+        let currentPlayer = 'X';
+        let board = [];
+        const message = document.getElementById('message');
+        const gameBoard = document.getElementById('game-board');
 
-        let currentQuestion = 0;
-        let moneyLevels = [500000, 1000000, 2000000, 3000000, 6000000, 10000000, 14000000, 20000000, 30000000, 40000000, 60000000, 85000000, 100000000, 150000000, 200000000];
-        let currentMoney = 0;
-
-
-        const questionElement = document.getElementById('question');
-        const answerButtons = document.querySelectorAll('.answer-button');
-        const messageElement = document.getElementById('message');
-        const moneyLevelList = document.querySelector('.money-level');
-        const fiftyFiftyButton = document.getElementById('fifty-fifty');
-        const askTheAudienceButton = document.getElementById('ask-the-audience');
-        const callAFriendButton = document.getElementById('call-a-friend');
-
-        function showQuestion() {
-            const q = questions[currentQuestion];
-            questionElement.textContent = q.question;
-            answerButtons.forEach(button => {
-                const answer = button.id.slice(-1);
-                button.textContent = q.answers[answer];
-                button.onclick = () => checkAnswer(answer);
-            });
-
-            // Highlight current money level
-            const moneyLevelItems = moneyLevelList.querySelectorAll('li');
-            moneyLevelItems.forEach((item, index) => {
-                item.classList.toggle('current-level', index === questions.length - 1 - currentQuestion);
-            });
-        }
-
-        function checkAnswer(answer) {
-            if (answer === questions[currentQuestion].correct) {
-                currentQuestion++;
-                currentMoney = moneyLevels[currentQuestion-1];
-                if (currentQuestion === questions.length) {
-                    messageElement.textContent = `Chúc mừng bạn đã chiến thắng ${currentMoney.toLocaleString()} đồng!`;
-                    disableAnswerButtons();
-                } else {
-                    messageElement.textContent = "Chính xác!";
-                    showQuestion();
+        function createBoard() {
+            for (let i = 0; i < boardSize; i++) {
+                board[i] = [];
+                for (let j = 0; j < boardSize; j++) {
+                    board[i][j] = '';
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.addEventListener('click', () => handleClick(i, j));
+                    gameBoard.appendChild(cell);
                 }
-            } else {
-                messageElement.textContent = `Sai rồi! Trò chơi kết thúc. Bạn nhận được ${currentMoney.toLocaleString()} đồng.`;
-                disableAnswerButtons();
             }
         }
 
+        function handleClick(row, col) {
+            if (board[row][col] === '' && !checkWinner()) {
+                board[row][col] = currentPlayer;
+                renderBoard();
 
-        function disableAnswerButtons() {
-            answerButtons.forEach(button => {
-                button.disabled = true;
-            });
+                if (checkWinner()) {
+                    message.textContent = `Player ${currentPlayer} wins!`;
+                } else if (checkDraw()) {
+                    message.textContent = "It's a draw!";
+                } else {
+                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                    message.textContent = `Player ${currentPlayer}'s turn`;
+                }
+            }
         }
 
-
-        function fiftyFifty() {
-            const q = questions[currentQuestion];
-            const correctAnswer = q.correct;
-            const incorrectAnswers = Object.keys(q.answers).filter(key => key !== correctAnswer);
-            const randomIncorrect = incorrectAnswers[Math.floor(Math.random() * incorrectAnswers.length)];
-
-            answerButtons.forEach(button => {
-                const answer = button.id.slice(-1);
-                if (answer !== correctAnswer && answer !== randomIncorrect) {
-                    button.disabled = true;
-                    button.style.opacity = 0.5;
+        function renderBoard() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach((cell, index) => {
+                const row = Math.floor(index / boardSize);
+                const col = index % boardSize;
+                cell.textContent = board[row][col];
+                cell.classList.remove('X', 'O');
+                if (board[row][col]) {
+                    cell.classList.add(board[row][col]);
                 }
             });
-            fiftyFiftyButton.disabled = true;
-            fiftyFiftyButton.classList.add('fifty-fifty-used');
-
-
         }
 
-        function askTheAudience() {
-            // Implement ask the audience logic (e.g., show a chart)
-            askTheAudienceButton.disabled = true;
-            askTheAudienceButton.classList.add('ask-the-audience-used');
-            alert("Khán giả bình chọn: ... (Chưa thực hiện)")
-
-
+        function checkWinner() {
+            // Check rows, columns, and diagonals for a winner
+          for (let i = 0; i < boardSize; i++) {
+            for (let j = 0; j < boardSize; j++) {
+              if (checkLine(i, j, 0, 1) || checkLine(i, j, 1, 0) || checkLine(i, j, 1, 1) || checkLine(i, j, 1, -1)) {
+                return true;
+              }
+            }
+          }
+          return false;
+        }
+        function checkLine(row, col, deltaRow, deltaCol) {
+          const player = board[row][col];
+          if (!player) return false;
+          let count = 0;
+          for (let i = 0; i < 5; i++) { // Check for 5 in a row
+            const r = row + i * deltaRow;
+            const c = col + i * deltaCol;
+            if (r < 0 || r >= boardSize || c < 0 || c >= boardSize || board[r][c] !== player) {
+              break;
+            }
+            count++;
+          }
+          return count === 5;
         }
 
-        function callAFriend() {
-            // Implement call a friend logic (e.g., show a dialog)
-            callAFriendButton.disabled = true;
-            callAFriendButton.classList.add('call-a-friend-used');
-            alert("Gọi điện thoại cho người thân: ... (Chưa thực hiện)")
 
+        function checkDraw() {
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    if (board[i][j] === '') {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
-
-        fiftyFiftyButton.onclick = fiftyFifty;
-        askTheAudienceButton.onclick = askTheAudience;
-        callAFriendButton.onclick = callAFriend;
-
-
-        showQuestion();
-
-
+        createBoard();
+        message.textContent = `Player ${currentPlayer}'s turn`;
     </script>
 
 </body>
