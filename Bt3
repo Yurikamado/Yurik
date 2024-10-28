@@ -1,0 +1,16 @@
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    long long salary;
+    long long totalSalary = 0;
+
+    while (cin >> salary && salary != -1) {
+        totalSalary += salary;
+    }
+
+    cout << totalSalary << endl;
+
+    return 0;
+}
