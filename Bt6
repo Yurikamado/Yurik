@@ -1,0 +1,21 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+int main() {
+    double n, p, m;
+    cin >> n >> p >> m;
+
+    int months = 0;
+    double current_amount = n;
+
+    while (current_amount < m) {
+        current_amount *= (1 + p / 100);
+        months++;
+    }
+
+    cout << months << endl;
+
+    return 0;
+}
