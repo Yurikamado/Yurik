@@ -1,0 +1,26 @@
+#include <iostream>
+#include <string>
+#include <iomanip>
+
+using namespace std;
+
+int main() {
+    long long n;
+    cin >> n;
+
+    string s = to_string(n);
+    long long product = 1;
+    long long sum = 0;
+
+    for (char c : s) {
+        int digit = c - '0';
+        product *= digit;
+        sum += digit;
+    }
+
+    double result = (double)product / sum;
+
+    cout << fixed << setprecision(3) << result << endl;
+
+    return 0;
+}
